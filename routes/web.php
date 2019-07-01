@@ -1,4 +1,5 @@
 <?php
+use Illuminate\Console\Scheduling\Event;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,6 +18,7 @@ Route::get('/', function () {
 
 Route::group(['middleware' => 'auth'], function () {
     Route::get('/events', 'EventsController@index');
+    Route::get('/events/create', 'EventsController@create');
     Route::get('/events/{event}', 'EventsController@show');
     Route::post('/events', 'EventsController@store');
     

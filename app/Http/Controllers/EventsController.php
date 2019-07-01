@@ -22,6 +22,11 @@ class EventsController extends Controller
         return view('events.show', compact('event'));
     }
 
+    public function create()
+    {
+        return view('events.create');
+    }
+
     public function store()
     {
         $attributes = request()->validate([

@@ -6,30 +6,19 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class EventsTest extends TestCase
+class ManageEventsTest extends TestCase
 {
     use WithFaker, RefreshDatabase;
 
     /** @test */
-    public function guests_cannot_create_events()
-    {
-        $attributes = factory('App\Event')->raw(['owner_id' => null]);
-
-        $this->post('/events', $attributes)->assertRedirect('login');
-    }
-
-    /** @test */
-    public function guests_cannot_view_events()
-    {
-        $this->get('/events')->assertRedirect('login');
-    }
-
-    /** @test */
-    public function guests_cannot_view_a_single_event()
+    public function guests_cannot_manage_events()
     {
         $event = factory('App\Event')->create();
 
+        $this->get('/events')->assertRedirect('login');
         $this->get($event->path())->assertRedirect('login');
+        $this->get('/events/create')->assertRedirect('login');
+        $this->post('/events', $event->toArray())->assertRedirect('login');
     }
 
     /** @test */
@@ -38,6 +27,8 @@ class EventsTest extends TestCase
         $this->withoutExceptionHandling();
 
         $this->actingAs(factory('App\User')->create());
+
+        $this->get('/events/create')->assertStatus(200);
 
         $attributes = [
             'title' => $this->faker->sentence,
