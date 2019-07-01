@@ -12,4 +12,9 @@ class Event extends Model
     {
         return "/events/{$this->id}";
     }
+
+    public function owner()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

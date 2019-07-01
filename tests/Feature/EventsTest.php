@@ -11,11 +11,25 @@ class EventsTest extends TestCase
     use WithFaker, RefreshDatabase;
 
     /** @test */
-    public function only_authenticated_user_can_create_a_project()
+    public function guests_cannot_create_events()
     {
         $attributes = factory('App\Event')->raw(['owner_id' => null]);
 
         $this->post('/events', $attributes)->assertRedirect('login');
+    }
+
+    /** @test */
+    public function guests_cannot_view_events()
+    {
+        $this->get('/events')->assertRedirect('login');
+    }
+
+    /** @test */
+    public function guests_cannot_view_a_single_event()
+    {
+        $event = factory('App\Event')->create();
+
+        $this->get($event->path())->assertRedirect('login');
     }
 
     /** @test */
@@ -38,15 +52,28 @@ class EventsTest extends TestCase
     }
 
     /** @test */
-    public function a_user_can_view_the_event()
+    public function a_user_can_view_their_event()
     {
+        $this->be(factory('App\User')->create());
+
         $this->withoutExceptionHandling();
 
-        $event = factory('App\Event')->create();
+        $event = factory('App\Event')->create(['owner_id' => auth()->id()]);
 
         $this->get($event->path())
             ->assertSee($event->title)
             ->assertSee($event->description);
+    }
+
+    /** @test */
+    public function an_authenticated_user_cannot_view_the_events_of_others()
+    {
+        $this->be(factory('App\User')->create());
+
+        $event = factory('App\Event')->create();
+
+        $this->get($event->path())
+            ->assertStatus(403);
     }
 
     /** @test */

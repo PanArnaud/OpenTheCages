@@ -8,13 +8,17 @@ class EventsController extends Controller
 {
     public function index()
     {
-        $events = Event::all();
+        $events = auth()->user()->events;
 
         return view('events.index', compact('events'));
     }
 
     public function show(Event $event)
     {
+        if (auth()->user()->isNot($event->owner)) {
+            abort(403);
+        }
+
         return view('events.show', compact('event'));
     }
 

@@ -15,11 +15,13 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-
-Route::get('/events', 'EventsController@index');
-Route::get('/events/{event}', 'EventsController@show');
-Route::post('/events', 'EventsController@store')->middleware('auth');
+Route::group(['middleware' => 'auth'], function () {
+    Route::get('/events', 'EventsController@index');
+    Route::get('/events/{event}', 'EventsController@show');
+    Route::post('/events', 'EventsController@store');
+    
+    Route::get('/home', 'HomeController@index')->name('home');
+});
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');

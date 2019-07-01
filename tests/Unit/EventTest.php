@@ -17,4 +17,12 @@ class EventTest extends TestCase
 
         $this->assertEquals('/events/' . $event->id, $event->path());
     }
+
+    /** @test */
+    public function it_belongs_to_an_owner()
+    {
+        $event = factory('App\Event')->create();
+
+        $this->assertInstanceOf('App\User', $event->owner);
+    }
 }
