@@ -23,6 +23,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/events', 'EventsController@store');
     
     Route::post('/events/{event}/tasks', 'EventTasksController@store');
+    Route::patch('/events/{event}/tasks/{task}', 'EventTasksController@update');
 
     Route::get('/home', 'HomeController@index')->name('home');
 });
