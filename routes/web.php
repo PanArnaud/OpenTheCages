@@ -14,3 +14,8 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+
+Route::get('/events', 'EventsController@index');
+Route::get('/events/{event}', 'EventsController@show');
+Route::post('/events', 'EventsController@store');
