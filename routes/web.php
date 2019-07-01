@@ -22,6 +22,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/events/{event}', 'EventsController@show');
     Route::post('/events', 'EventsController@store');
     
+    Route::post('/events/{event}/tasks', 'EventTasksController@store');
+
     Route::get('/home', 'HomeController@index')->name('home');
 });
 

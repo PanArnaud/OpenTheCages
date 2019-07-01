@@ -15,10 +15,9 @@
       <div class="lg:w-3/4 px-3 mb-6">
           <div class="mb-8">
             <h2 class="text-grey mb-3 font-normal text-lg">Tasks</h2>
-            <div class="card mb-3"> Lorem Ipsum</div>
-            <div class="card mb-3"> Lorem Ipsum</div>
-            <div class="card mb-3"> Lorem Ipsum</div>
-            <div class="card"> Lorem Ipsum</div>
+            @foreach ($event->tasks as $task)
+              <div class="car mb-3">{{ $task->body }}</div>
+            @endforeach
           </div>
           
           <div>

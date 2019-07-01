@@ -25,4 +25,15 @@ class EventTest extends TestCase
 
         $this->assertInstanceOf('App\User', $event->owner);
     }
+
+    /** @test */
+    public function it_can_add_a_task()
+    {
+        $event = factory('App\Event')->create();
+
+        $task = $event->addTask('Test task');
+
+        $this->assertCount(1, $event->tasks);
+        $this->assertTrue($event->tasks->contains($task));
+    }
 }

@@ -26,7 +26,7 @@ class ManageEventsTest extends TestCase
     {
         $this->withoutExceptionHandling();
 
-        $this->actingAs(factory('App\User')->create());
+        $this->signIn();
 
         $this->get('/events/create')->assertStatus(200);
 
@@ -45,7 +45,7 @@ class ManageEventsTest extends TestCase
     /** @test */
     public function a_user_can_view_their_event()
     {
-        $this->be(factory('App\User')->create());
+        $this->signIn();
 
         $this->withoutExceptionHandling();
 
@@ -53,13 +53,13 @@ class ManageEventsTest extends TestCase
 
         $this->get($event->path())
             ->assertSee($event->title)
-            ->assertSee($event->description);
+            ->assertSee(\Illuminate\Support\Str::limit($event->description, 100));
     }
 
     /** @test */
     public function an_authenticated_user_cannot_view_the_events_of_others()
     {
-        $this->be(factory('App\User')->create());
+        $this->signIn();
 
         $event = factory('App\Event')->create();
 
@@ -70,7 +70,7 @@ class ManageEventsTest extends TestCase
     /** @test */
     public function an_event_requires_a_title()
     {
-        $this->actingAs(factory('App\User')->create());
+        $this->signIn();
 
         $attributes = factory('App\Event')->raw(['title' => '']);
 
@@ -80,7 +80,7 @@ class ManageEventsTest extends TestCase
     /** @test */
     public function an_event_requires_a_description()
     {
-        $this->actingAs(factory('App\User')->create());
+        $this->signIn();
 
         $attributes = factory('App\Event')->raw(['description' => '']);
 
