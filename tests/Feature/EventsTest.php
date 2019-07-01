@@ -11,19 +11,32 @@ class EventsTest extends TestCase
     use WithFaker, RefreshDatabase;
 
     /** @test */
+    public function only_authenticated_user_can_create_a_project()
+    {
+        $attributes = factory('App\Event')->raw(['owner_id' => null]);
+
+        $this->post('/events', $attributes)->assertRedirect('login');
+    }
+
+    /** @test */
     public function a_user_can_create_an_event()
     {
         $this->withoutExceptionHandling();
-        
-        $attributes = factory('App\Event')->raw();
+
+        $this->actingAs(factory('App\User')->create());
+
+        $attributes = [
+            'title' => $this->faker->sentence,
+            'description' => $this->faker->paragraph
+        ];
 
         $this->post('/events', $attributes)->assertRedirect('/events');
-        
+
         $this->assertDatabaseHas('events', $attributes);
-        
+
         $this->get('/events')->assertSee($attributes['title']);
     }
-    
+
     /** @test */
     public function a_user_can_view_the_event()
     {
@@ -39,6 +52,8 @@ class EventsTest extends TestCase
     /** @test */
     public function an_event_requires_a_title()
     {
+        $this->actingAs(factory('App\User')->create());
+
         $attributes = factory('App\Event')->raw(['title' => '']);
 
         $this->post('/events', $attributes)->assertSessionHasErrors('title');
@@ -47,6 +62,8 @@ class EventsTest extends TestCase
     /** @test */
     public function an_event_requires_a_description()
     {
+        $this->actingAs(factory('App\User')->create());
+
         $attributes = factory('App\Event')->raw(['description' => '']);
 
         $this->post('/events', $attributes)->assertSessionHasErrors('description');

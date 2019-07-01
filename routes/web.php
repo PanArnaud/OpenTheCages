@@ -18,4 +18,8 @@ Route::get('/', function () {
 
 Route::get('/events', 'EventsController@index');
 Route::get('/events/{event}', 'EventsController@show');
-Route::post('/events', 'EventsController@store');
+Route::post('/events', 'EventsController@store')->middleware('auth');
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');

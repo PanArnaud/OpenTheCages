@@ -25,7 +25,7 @@ class EventsController extends Controller
             'description' => 'required'
         ]);
 
-        Event::create($attributes);
+        auth()->user()->events()->create($attributes);
 
         return redirect('/events');
     }
