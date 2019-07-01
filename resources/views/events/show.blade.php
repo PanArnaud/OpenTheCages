@@ -15,9 +15,17 @@
       <div class="lg:w-3/4 px-3 mb-6">
           <div class="mb-8">
             <h2 class="text-grey mb-3 font-normal text-lg">Tasks</h2>
+            
             @foreach ($event->tasks as $task)
-              <div class="car mb-3">{{ $task->body }}</div>
+              <div class="card mb-3">{{ $task->body }}</div>
             @endforeach
+
+              <div class="card mb-3">
+                <form method="POST" action="{{ $event->path() . '/tasks' }}">
+                  @csrf
+                  <input class="w-full" placeholder="Add a new Task..." name="body">
+                </form>
+              </div>
           </div>
           
           <div>

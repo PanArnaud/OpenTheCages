@@ -34,8 +34,8 @@ class EventsController extends Controller
             'description' => 'required'
         ]);
 
-        auth()->user()->events()->create($attributes);
+        $event = auth()->user()->events()->create($attributes);
 
-        return redirect('/events');
+        return redirect($event->path());
     }
 }

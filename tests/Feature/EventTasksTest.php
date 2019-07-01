@@ -12,6 +12,27 @@ class EventTasksTest extends TestCase
     use RefreshDatabase;
 
     /** @test */
+    public function guests_cannot_add_tasks_to_event()
+    {
+        $event = factory('App\Event')->create();
+
+        $this->post($event->path() . '/tasks')->assertRedirect('login');
+    }
+
+    /** @test */
+    public function only_the_owner_of_a_project_may_add_tasks()
+    {
+        $this->signIn();
+
+        $event = factory('App\Event')->create();
+    
+        $this->post($event->path() . '/tasks', ['body' => 'Test task'])
+            ->assertStatus(403);
+
+        $this->assertDatabaseMissing('tasks', ['body' => 'Test case']);
+    }
+
+    /** @test */
     public function a_event_can_have_tasks()
     {
         $this->signIn();
@@ -24,6 +45,7 @@ class EventTasksTest extends TestCase
         $this->get($event->path())
             ->assertSee($body);
     }
+    
 
     /** @test */
     public function a_task_requires_a_body()

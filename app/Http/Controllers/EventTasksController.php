@@ -9,6 +9,10 @@ class EventTasksController extends Controller
 {
     public function store(Event $event)
     {
+        if (auth()->user()->isNot($event->owner)) {
+            abort(403);
+        }
+
         request()->validate([
             'body' => 'required'
         ]);
