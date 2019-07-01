@@ -1,10 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title></title>
-</head>
-<body>
+@extends('layouts.app')
+
+@section('content')
   <h1>{{$event->title }}</h1>
   <div>{{ $event->description }}</div>
-</body>
-</html>
+  <a href="/events">Go Back</a>
+@endsection
