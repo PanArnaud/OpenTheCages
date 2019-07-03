@@ -8,6 +8,8 @@ class Task extends Model
 {
     protected $guarded = [];
 
+    protected $touches = ['event'];
+
     public function event()
     {
         return $this->belongsTo('App\Event');

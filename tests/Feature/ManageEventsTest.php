@@ -33,16 +33,40 @@ class ManageEventsTest extends TestCase
 
         $attributes = [
             'title' => $this->faker->sentence,
-            'description' => $this->faker->paragraph
+            'description' => $this->faker->sentence,
+            'notes' => 'This is a note.'
         ];
 
         $response = $this->post('/events', $attributes);
 
-        $response->assertRedirect(Event::where($attributes)->first()->path());
+        $event = Event::where($attributes)->first();
+
+        $response->assertRedirect($event->path());
 
         $this->assertDatabaseHas('events', $attributes);
 
-        $this->get('/events')->assertSee($attributes['title']);
+        $this->get($event->path())
+            ->assertSee($attributes['title'])
+            ->assertSee($attributes['description'])
+            ->assertSee($attributes['notes']);
+    }
+
+    /** @test */
+    public function an_user_can_update_a_project()
+    {
+        $this->withoutExceptionHandling();
+
+        $this->signIn();
+
+        $event = factory('App\Event')->create(['owner_id' => auth()->id()]);
+    
+        $this->patch($event->path(), [
+            'notes' => 'I am an updated note'
+        ])->assertRedirect($event->path());
+
+        $this->assertDatabaseHas('events', [
+            'notes' => 'I am an updated note'
+        ]);
     }
 
     /** @test */
@@ -67,6 +91,17 @@ class ManageEventsTest extends TestCase
         $event = factory('App\Event')->create();
 
         $this->get($event->path())
+            ->assertStatus(403);
+    }
+
+    /** @test */
+    public function an_authenticated_user_cannot_update_the_events_of_others()
+    {
+        $this->signIn();
+
+        $event = factory('App\Event')->create();
+
+        $this->patch($event->path(), [])
             ->assertStatus(403);
     }
 

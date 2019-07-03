@@ -10,9 +10,7 @@ class EventTasksController extends Controller
 {
     public function store(Event $event)
     {
-        if (auth()->user()->isNot($event->owner)) {
-            abort(403);
-        }
+        $this->authorize('update', $event);
 
         request()->validate([
             'body' => 'required'
@@ -25,9 +23,7 @@ class EventTasksController extends Controller
 
     public function update(Event $event, Task $task)
     {
-        if (auth()->user()->isNot($event->owner)) {
-            abort(403);
-        }
+        $this->authorize('update', $event);
 
         request()->validate([
             'body' => 'required'

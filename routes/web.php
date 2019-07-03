@@ -20,6 +20,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/events', 'EventsController@index');
     Route::get('/events/create', 'EventsController@create');
     Route::get('/events/{event}', 'EventsController@show');
+    Route::patch('/events/{event}', 'EventsController@update');
     Route::post('/events', 'EventsController@store');
     
     Route::post('/events/{event}/tasks', 'EventTasksController@store');

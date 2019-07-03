@@ -19,8 +19,8 @@
             @foreach ($event->tasks as $task)
               <div class="card mb-3">
                 <form method="POST" action="{{ $task->path() }}">
-                  @method('PATCH')
                   @csrf
+                  @method('PATCH')
 
                   <div class="flex items-center">
                     <input class="w-full {{ $task->completed ? 'text-grey' : '' }}" name="body" value="{{ $task->body }}">
@@ -40,7 +40,17 @@
           
           <div>
             <h2 class="text-grey mb-3 font-normal text-lg">Notes</h2>
-            <textarea class="card w-full" style="min-height: 200px;">Lorem Ipsum.</textarea>
+            <form method="POST" action="{{ $event->path() }}">
+              @csrf
+              @method('PATCH')
+              <textarea 
+                name="notes"
+                class="card w-full mb-4" 
+                style="min-height: 200px;" 
+                placeholder="Anything special that you want to make a note of ?">{{ $event->notes }}</textarea>
+
+              <button type="submit" class="button">Save</button>
+            </form>
           </div>
       </div>
       <div class="lg:w-1/4 px-3">
