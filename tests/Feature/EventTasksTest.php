@@ -6,6 +6,7 @@ use App\Event;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Facades\Tests\Setup\EventFactory;
 
 class EventTasksTest extends TestCase
 {
@@ -35,30 +36,25 @@ class EventTasksTest extends TestCase
     /** @test */
     public function a_event_can_have_tasks()
     {
-        $this->signIn();
+        $event = EventFactory::create();
 
-        $event = factory(Event::class)->create(['owner_id' => auth()->id()]);
-        
-        $body = 'Test Task';
-        $this->post($event->path() . '/tasks', ['body' => $body]);
+        $this->actingAs($event->owner)
+            ->post($event->path() . '/tasks', ['body' => 'Test Task']);
         
         $this->get($event->path())
-        ->assertSee($body);
+            ->assertSee('Test Task');
     }
     
     /** @test */
     public function a_task_can_be_updated()
     {
-        $this->signIn();
-        
-        $event = factory(Event::class)->create(['owner_id' => auth()->id()]);
-    
-        $task = $event->addTask('Test task');
+        $event = EventFactory::withTasks(1)->create();
 
-        $this->patch($task->path(), [
-            'body' => 'changed',
-            'completed' => true
-        ]);
+        $this->actingAs($event->owner)
+            ->patch($event->tasks->first()->path(), [
+                'body' => 'changed',
+                'completed' => true
+            ]);
 
         $this->assertDatabaseHas('tasks', [
             'body' => 'changed',
@@ -71,11 +67,9 @@ class EventTasksTest extends TestCase
     {
         $this->signIn();
 
-        $event = factory('App\Event')->create();
-    
-        $task = $event->addTask('test task');
+        $event = EventFactory::withTasks(1)->create();
 
-        $this->patch($task->path(), ['body' => 'Another body'])
+        $this->patch($event->tasks->first()->path(), ['body' => 'Another body'])
             ->assertStatus(403);
 
         $this->assertDatabaseMissing('tasks', ['body' => 'Another body']);
@@ -84,13 +78,12 @@ class EventTasksTest extends TestCase
     /** @test */
     public function a_task_requires_a_body()
     {
-        $this->signIn();
-
-        $event = factory(Event::class)->create(['owner_id' => auth()->id()]);
+        $event = EventFactory::create();
 
         $attributes = factory('App\Task')->raw(['body' => '']);
 
-        $this->post($event->path() . '/tasks', $attributes)
+        $this->actingAs($event->owner)
+            ->post($event->path() . '/tasks', $attributes)
             ->assertSessionHasErrors('body');
     }
 }

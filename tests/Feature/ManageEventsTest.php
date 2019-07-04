@@ -6,6 +6,7 @@ use App\Event;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Facades\Tests\Setup\EventFactory;
 
 class ManageEventsTest extends TestCase
 {
@@ -25,8 +26,6 @@ class ManageEventsTest extends TestCase
     /** @test */
     public function a_user_can_create_an_event()
     {
-        $this->withoutExceptionHandling();
-
         $this->signIn();
 
         $this->get('/events/create')->assertStatus(200);
@@ -43,8 +42,6 @@ class ManageEventsTest extends TestCase
 
         $response->assertRedirect($event->path());
 
-        $this->assertDatabaseHas('events', $attributes);
-
         $this->get($event->path())
             ->assertSee($attributes['title'])
             ->assertSee($attributes['description'])
@@ -52,17 +49,14 @@ class ManageEventsTest extends TestCase
     }
 
     /** @test */
-    public function an_user_can_update_a_project()
+    public function an_user_can_update_an_event()
     {
-        $this->withoutExceptionHandling();
+        $event = EventFactory::create();
 
-        $this->signIn();
-
-        $event = factory('App\Event')->create(['owner_id' => auth()->id()]);
-    
-        $this->patch($event->path(), [
-            'notes' => 'I am an updated note'
-        ])->assertRedirect($event->path());
+        $this->actingAs($event->owner)
+            ->patch($event->path(), [
+                'notes' => 'I am an updated note'
+            ])->assertRedirect($event->path());
 
         $this->assertDatabaseHas('events', [
             'notes' => 'I am an updated note'
@@ -70,15 +64,12 @@ class ManageEventsTest extends TestCase
     }
 
     /** @test */
-    public function a_user_can_view_their_event()
+    public function a_user_can_view_their_events()
     {
-        $this->signIn();
+        $event = EventFactory::create();
 
-        $this->withoutExceptionHandling();
-
-        $event = factory('App\Event')->create(['owner_id' => auth()->id()]);
-
-        $this->get($event->path())
+        $this->actingAs($event->owner)
+            ->get($event->path())
             ->assertSee($event->title)
             ->assertSee(\Illuminate\Support\Str::limit($event->description, 100));
     }
@@ -101,7 +92,7 @@ class ManageEventsTest extends TestCase
 
         $event = factory('App\Event')->create();
 
-        $this->patch($event->path(), [])
+        $this->patch($event->path())
             ->assertStatus(403);
     }
 
