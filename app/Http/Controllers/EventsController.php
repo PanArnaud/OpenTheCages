@@ -27,23 +27,33 @@ class EventsController extends Controller
 
     public function store()
     {
-        $attributes = request()->validate([
-            'title' => 'required', 
-            'description' => 'required',
-            'notes' => ''
-        ]);
-
-        $event = auth()->user()->events()->create($attributes);
+        $event = auth()->user()->events()->create($this->validateRequest());
 
         return redirect($event->path());
+    }
+
+    public function edit(Event $event)
+    {
+        $this->authorize('update', $event);
+
+        return view('events.edit', compact('event'));
     }
 
     public function update(Event $event)
     {
         $this->authorize('update', $event);
 
-        $event->update(request(['notes']));
+        $event->update($this->validateRequest());
 
         return  redirect($event->path());
+    }
+
+    protected function validateRequest()
+    {
+        return request()->validate([
+            'title' => 'sometimes|required', 
+            'description' => 'sometimes|required',
+            'notes' => 'nullable'
+        ]);
     }
 }

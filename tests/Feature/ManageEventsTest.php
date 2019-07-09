@@ -19,6 +19,7 @@ class ManageEventsTest extends TestCase
 
         $this->get('/events')->assertRedirect('login');
         $this->get($event->path())->assertRedirect('login');
+        $this->get($event->path().'/edit')->assertRedirect('login');
         $this->get('/events/create')->assertRedirect('login');
         $this->post('/events', $event->toArray())->assertRedirect('login');
     }
@@ -54,13 +55,28 @@ class ManageEventsTest extends TestCase
         $event = EventFactory::create();
 
         $this->actingAs($event->owner)
-            ->patch($event->path(), [
-                'notes' => 'I am an updated note'
+            ->patch($event->path(), $attributes = [
+                'title' => 'changed',
+                'description' => 'changed',
+                'notes' => 'changed'
             ])->assertRedirect($event->path());
 
-        $this->assertDatabaseHas('events', [
-            'notes' => 'I am an updated note'
-        ]);
+        $this->get($event->path().'/edit')->assertOk();
+
+        $this->assertDatabaseHas('events', $attributes);
+    }
+
+    /** @test */
+    public function a_user_can_update_an_event_general_notes()
+    {
+        $event = EventFactory::create();
+
+        $this->actingAs($event->owner)
+            ->patch($event->path(), $attributes = [
+                'notes' => 'changed'
+            ])->assertRedirect($event->path());
+
+        $this->assertDatabaseHas('events', $attributes);
     }
 
     /** @test */

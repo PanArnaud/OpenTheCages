@@ -6,7 +6,7 @@
       <p class="text-grey text-sm font-normal">
         <a href="/events" class="text-grey text-sm font-normal no-underline">My Events</a> / {{ $event->title }}
       </p>
-      <a href="/events/create" class="button">Add Event</a>
+      <a href="{{ $event->path() }}/edit" class="button">Edit</a>
     </div>
   </header>
 
@@ -51,6 +51,14 @@
 
               <button type="submit" class="button">Save</button>
             </form>
+
+            @if ($errors->any())
+              <div class="field mt-6">
+                @foreach ($errors->all() as $error)
+                  <li class="text-sm text-red">{{ $error }}</li>
+                @endforeach
+              </div>
+            @endif
           </div>
       </div>
       <div class="lg:w-1/4 px-3">
