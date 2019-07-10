@@ -25,17 +25,15 @@ class EventTasksController extends Controller
     {
         $this->authorize('update', $event);
 
-        request()->validate([
+        $attributes = request()->validate([
             'body' => 'required'
         ]);
 
-        $task->update([
-            'body' => request('body')
-        ]);
+        $task->update($attributes);
 
-        if (request()->has('completed')) {
-            $task->complete();
-        }
+        $method = request('completed') ? 'complete' : 'incomplete';
+
+        $task->$method();
 
         return redirect($event->path());
     }

@@ -36,15 +36,11 @@ class Event extends Model
     /**
      * Record a new Activity for an Event
      *
-     * @param Event $event
-     * @param string $type
+     * @param string $description
      * @return void
      */
-    public function recordActivity($type)
+    public function recordActivity($description)
     {
-        Activity::create([
-            'event_id' => $this->id,
-            'description' => $type
-        ]);
+        $this->activity()->create(compact('description'));
     }
 }

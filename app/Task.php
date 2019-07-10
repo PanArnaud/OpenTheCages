@@ -30,4 +30,11 @@ class Task extends Model
             'completed' => true
         ]);
     }
+
+    public function incomplete()
+    {
+        $this->update([
+            'completed' => false
+        ]);
+    }
 }

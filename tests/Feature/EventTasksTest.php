@@ -52,6 +52,21 @@ class EventTasksTest extends TestCase
 
         $this->actingAs($event->owner)
             ->patch($event->tasks->first()->path(), [
+                'body' => 'changed'
+            ]);
+
+        $this->assertDatabaseHas('tasks', [
+            'body' => 'changed'
+        ]);
+    }
+
+    /** @test */
+    public function a_task_can_be_completed()
+    {
+        $event = EventFactory::withTasks(1)->create();
+
+        $this->actingAs($event->owner)
+            ->patch($event->tasks->first()->path(), [
                 'body' => 'changed',
                 'completed' => true
             ]);
@@ -59,6 +74,29 @@ class EventTasksTest extends TestCase
         $this->assertDatabaseHas('tasks', [
             'body' => 'changed',
             'completed' => true
+        ]);
+    }
+
+    /** @test */
+    public function a_task_can_be_marked_as_incomplete()
+    {
+        $event = EventFactory::withTasks(1)->create();
+
+        $this->actingAs($event->owner)
+            ->patch($event->tasks->first()->path(), [
+                'body' => 'changed',
+                'completed' => true
+            ]);
+
+        $this->actingAs($event->owner)
+            ->patch($event->tasks->first()->path(), [
+                'body' => 'changed',
+                'completed' => false
+            ]);
+
+        $this->assertDatabaseHas('tasks', [
+            'body' => 'changed',
+            'completed' => false
         ]);
     }
 
