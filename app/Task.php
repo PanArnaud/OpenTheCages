@@ -10,6 +10,10 @@ class Task extends Model
 
     protected $touches = ['event'];
 
+    protected $casts = [
+        'completed' => 'boolean'
+    ];
+
     public function event()
     {
         return $this->belongsTo('App\Event');
@@ -18,5 +22,12 @@ class Task extends Model
     public function path()
     {
         return "{$this->event->path()}/tasks/{$this->id}";
+    }
+
+    public function complete()
+    {
+        $this->update([
+            'completed' => true
+        ]);
     }
 }

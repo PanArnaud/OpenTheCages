@@ -30,9 +30,12 @@ class EventTasksController extends Controller
         ]);
 
         $task->update([
-            'body' => request('body'),
-            'completed' => request()->has('completed')
+            'body' => request('body')
         ]);
+
+        if (request()->has('completed')) {
+            $task->complete();
+        }
 
         return redirect($event->path());
     }

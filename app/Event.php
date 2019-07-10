@@ -27,4 +27,24 @@ class Event extends Model
     {
         return $this->tasks()->create(compact('body'));
     }
+
+    public function activity()
+    {
+        return $this->hasMany(Activity::class);
+    }
+
+    /**
+     * Record a new Activity for an Event
+     *
+     * @param Event $event
+     * @param string $type
+     * @return void
+     */
+    public function recordActivity($type)
+    {
+        Activity::create([
+            'event_id' => $this->id,
+            'description' => $type
+        ]);
+    }
 }
