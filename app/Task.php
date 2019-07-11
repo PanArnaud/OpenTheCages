@@ -30,7 +30,7 @@ class Task extends Model
             'completed' => true
         ]);
 
-        $this->event->recordActivity('completed_task');
+        $this->recordActivity('completed_task');
     }
     
     public function incomplete()
@@ -39,6 +39,25 @@ class Task extends Model
             'completed' => false
         ]);
 
-        $this->event->recordActivity('incompleted_task');
+        $this->recordActivity('incompleted_task');
+    }
+
+    public function activity()
+    {
+        return $this->morphMany(Activity::class, 'subject')->latest();
+    }
+
+    /**
+     * Record a new Activity for an Event
+     *
+     * @param string $description
+     * @return void
+     */
+    public function recordActivity($description)
+    {
+        $this->activity()->create([
+            'event_id' => $this->event->id,
+            'description' => $description,
+        ]);
     }
 }

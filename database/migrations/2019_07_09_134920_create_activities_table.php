@@ -16,6 +16,8 @@ class CreateActivitiesTable extends Migration
         Schema::create('activities', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('event_id');
+            $table->nullableMorphs('subject');
+            $table->text('changes')->nullable();
             $table->text('description');
             $table->timestamps();
 

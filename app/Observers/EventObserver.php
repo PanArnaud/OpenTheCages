@@ -17,6 +17,11 @@ class EventObserver
         $event->recordActivity('created');
     }
 
+    public function updating(Event $event)
+    {
+        $event->old = $event->getOriginal();
+    }
+
     /**
      * Handle the event "updated" event.
      *

@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use Tests\TestCase;
+use App\Task;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Facades\Tests\Setup\EventFactory;
@@ -17,7 +18,11 @@ class TriggerActivityTest extends TestCase
         $event = EventFactory::create();
 
         $this->assertCount(1, $event->activity);
-        $this->assertEquals('created', $event->activity[0]->description);
+        
+        tap($event->activity->last(), function ($activity) {
+            $this->assertEquals('created', $activity->description);
+            $this->assertNull($activity->changes);
+        });
     }
 
     /** @test */
@@ -25,19 +30,38 @@ class TriggerActivityTest extends TestCase
     {
         $event = EventFactory::create();
 
+        $originalTitle = $event->title;
+
         $event->update(['title' => 'changed']);
 
         $this->assertCount(2, $event->activity);
+        tap($event->activity->last(), function ($activity) use ($originalTitle) {
+            $this->assertEquals('updated', $activity->description);
+            
+            $expected = [
+                'before' => ['title' => $originalTitle],
+                'after' => ['title' => 'changed']
+            ];
+
+            $this->assertEquals($expected, $activity->changes);
+        });
         $this->assertEquals('updated', $event->activity->last()->description);
     }
     
     /** @test */
     public function creating_a_new_task()
     {
-        $event = EventFactory::withTasks(1)->create();
+        $event = EventFactory::create();
+
+        $event->addTask('Some task');
 
         $this->assertCount(2, $event->activity);
-        $this->assertEquals('created_task', $event->activity->last()->description);
+
+        tap($event->activity->last(), function ($activity) {
+            $this->assertEquals('created_task', $activity->description);
+            $this->assertInstanceOf(Task::class, $activity->subject);
+            $this->assertEquals('Some task', $activity->subject->body);
+        });
     }
 
     /** @test */
@@ -51,7 +75,10 @@ class TriggerActivityTest extends TestCase
         ]);
 
         $this->assertCount(3, $event->activity);
-        $this->assertEquals('completed_task', $event->activity->last()->description);
+        tap($event->activity->last(), function ($activity) {
+            $this->assertEquals('completed_task', $activity->description);
+            $this->assertInstanceOf(Task::class, $activity->subject);
+        });
     }
 
     /** @test */
