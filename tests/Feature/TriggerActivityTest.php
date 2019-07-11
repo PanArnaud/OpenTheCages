@@ -7,12 +7,12 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Facades\Tests\Setup\EventFactory;
 
-class ActivityFeedTest extends TestCase
+class TriggerActivityTest extends TestCase
 {
     use RefreshDatabase;
 
     /** @test */
-    public function creating_an_event_record_activity()
+    public function creating_an_event()
     {
         $event = EventFactory::create();
 
@@ -21,7 +21,7 @@ class ActivityFeedTest extends TestCase
     }
 
     /** @test */
-    public function updating_an_event_record_activity()
+    public function updating_an_event()
     {
         $event = EventFactory::create();
 
@@ -32,7 +32,7 @@ class ActivityFeedTest extends TestCase
     }
     
     /** @test */
-    public function creating_a_new_task_for_an_event_record_an_activity()
+    public function creating_a_new_task()
     {
         $event = EventFactory::withTasks(1)->create();
 
@@ -41,7 +41,7 @@ class ActivityFeedTest extends TestCase
     }
 
     /** @test */
-    public function completing_a_new_task_for_an_event_record_an_activity()
+    public function completing_a_task()
     {
         $event = EventFactory::withTasks(1)->create();
         
@@ -52,5 +52,39 @@ class ActivityFeedTest extends TestCase
 
         $this->assertCount(3, $event->activity);
         $this->assertEquals('completed_task', $event->activity->last()->description);
+    }
+
+    /** @test */
+    public function incompleting_a_task()
+    {
+        $event = EventFactory::withTasks(1)->create();
+        
+        $this->actingAs($event->owner)->patch($event->tasks[0]->path(), [
+            'body' => 'foobar',
+            'completed' => true
+        ]);
+
+        $this->assertCount(3, $event->activity);
+        
+        $this->actingAs($event->owner)->patch($event->tasks[0]->path(), [
+            'body' => 'foobar',
+            'completed' => false
+        ]);
+
+        $event->refresh();
+
+        $this->assertCount(4, $event->activity);
+        $this->assertEquals('incompleted_task', $event->activity->last()->description);
+    }
+
+    /** @test */
+    public function deleting_a_task()
+    {
+        $event = EventFactory::withTasks(1)->create();
+        
+        $event->tasks[0]->delete();
+
+        $this->assertCount(3, $event->activity);
+        $this->assertEquals('deleted_task', $event->activity->last()->description);
     }
 }

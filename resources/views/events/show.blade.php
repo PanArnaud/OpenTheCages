@@ -63,6 +63,7 @@
       </div>
       <div class="lg:w-1/4 px-3">
         @include('events.card')
+        @include('events.activity.card')
       </div>
     </div>
   </main>
