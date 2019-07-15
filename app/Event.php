@@ -6,9 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Event extends Model
 {
-    protected $guarded = [];
+    use RecordsActivity;
 
-    public $old = [];
+    protected $guarded = [];
 
     public function path()
     {
@@ -33,29 +33,5 @@ class Event extends Model
     public function activity()
     {
         return $this->hasMany(Activity::class)->latest();
-    }
-
-    /**
-     * Record a new Activity for an Event
-     *
-     * @param string $description
-     * @return void
-     */
-    public function recordActivity($description)
-    {
-        $this->activity()->create([
-            'description' => $description,
-            'changes' => $this->activityChanges($description)
-        ]);
-    }
-
-    protected function activityChanges($description)
-    {
-        if ($description === 'updated') {
-            return [
-                'before' => array_except(array_diff($this->old, $this->getAttributes()), 'updated_at'),
-                'after' => array_except($this->getChanges(), 'updated_at')
-            ];
-        }
     }
 }

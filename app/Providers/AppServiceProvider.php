@@ -25,7 +25,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        \App\Event::observe(EventObserver::class);
-        \App\Task::observe(TaskObserver::class);
+        
     }
 }
