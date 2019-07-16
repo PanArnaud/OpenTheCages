@@ -19,7 +19,7 @@ class ActivityTest extends TestCase
     {
         $user = $this->signIn();
 
-        $event = EventFactory:: ownedBy($user)->create();
+        $event = EventFactory::ownedBy($user)->create();
 
         $this->assertEquals($user->id, $event->activity->first()->user->id);
     }
