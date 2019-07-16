@@ -1,1 +1,1 @@
-You created the event
+{{ $activity->username() }} created the event

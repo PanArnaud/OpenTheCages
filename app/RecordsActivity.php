@@ -51,6 +51,7 @@ trait RecordsActivity
     {
         $this->activity()->create([
             'description' => $description,
+            'user_id' => ($this->event ?? $this)->owner->id,
             'changes' => $this->activityChanges(),
             'event_id' => class_basename($this) === 'Event' ? $this->id : $this->event->id
         ]);
