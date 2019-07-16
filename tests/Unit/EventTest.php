@@ -36,4 +36,14 @@ class EventTest extends TestCase
         $this->assertCount(1, $event->tasks);
         $this->assertTrue($event->tasks->contains($task));
     }
+
+    /** @test */
+    public function it_can_invite_an_user()
+    {
+        $event = factory('App\Event')->create();
+
+        $event->invite($user = factory('App\User')->create());
+
+        $this->assertTrue($event->members->contains($user));
+    } 
 }

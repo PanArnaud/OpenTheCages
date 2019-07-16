@@ -34,4 +34,14 @@ class Event extends Model
     {
         return $this->hasMany(Activity::class)->latest();
     }
+
+    public function members()
+    {
+        return $this->belongsToMany(User::class, 'event_members');
+    }
+
+    public function invite(User $user)
+    {
+        return $this->members()->attach($user);
+    }
 }

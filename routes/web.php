@@ -16,12 +16,7 @@ Route::get('/', function () {
 });
 
 Route::group(['middleware' => 'auth'], function () {
-    Route::get('/events', 'EventsController@index');
-    Route::get('/events/create', 'EventsController@create');
-    Route::get('/events/{event}', 'EventsController@show');
-    Route::get('/events/{event}/edit', 'EventsController@edit');
-    Route::patch('/events/{event}', 'EventsController@update');
-    Route::post('/events', 'EventsController@store');
+    Route::resource('events', 'EventsController');
     
     Route::post('/events/{event}/tasks', 'EventTasksController@store');
     Route::patch('/events/{event}/tasks/{task}', 'EventTasksController@update');

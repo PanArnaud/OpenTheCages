@@ -12,6 +12,6 @@ class EventPolicy
 
     public function update(User $user, Event $event)
     {
-        return $user->is($event->owner);
+        return $user->is($event->owner) || $event->members->contains($user);
     }
 }

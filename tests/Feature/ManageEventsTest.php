@@ -131,4 +131,26 @@ class ManageEventsTest extends TestCase
 
         $this->post('/events', $attributes)->assertSessionHasErrors('description');
     }
+    
+    /** @test */
+    public function unauthorized_users_cannot_delete_an_event()
+    {
+        $event = EventFactory::create();
+
+        $this->delete($event->path())->assertRedirect('/login');
+
+        $this->signIn();
+        $this->delete($event->path())->assertStatus(403);
+    }
+
+    /** @test */
+    public function an_user_can_delete_an_event()
+    {
+        $event = EventFactory::create();
+
+        $this->actingAs($event->owner)
+            ->delete($event->path())->assertRedirect('/events');
+
+        $this->assertDatabaseMissing('events', $event->only('id'));
+    }
 }

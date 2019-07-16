@@ -3,5 +3,13 @@
     <a href="{{ $event->path() }}" class="text-black no-underline">{{ $event->title }}</a>
   </h3>
   
-  <div class="text-grey">{{ str_limit($event->description, 100) }}</div>
+  <div class="text-grey mb-4">{{ str_limit($event->description, 100) }}</div>
+
+  <footer>
+    <form method="POST" action="{{ $event->path() }}" class="text-right">
+      @method("DELETE")
+      @csrf
+      <button class="text-xs" type="submit">Delete</button>
+    </form>
+  </footer>
 </div>
